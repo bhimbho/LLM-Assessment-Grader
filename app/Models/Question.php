@@ -22,9 +22,33 @@ class Question extends Model
         'level',
     ];
 
-    public function uploads()
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($question) {
+            $question->assessments()->each(function ($assessment) {
+                $assessment->uploads()->delete();
+                $assessment->delete();
+            });
+
+            if ($question->question_upload_id) {
+                $question->questionUpload()->delete();
+            }
+            if ($question->answer_upload_id) {
+                $question->answerUpload()->delete();
+            }
+        });
+    }
+
+    public function questionUpload()
     {
         return $this->belongsTo(Upload::class, 'question_upload_id');
+    }
+
+    public function answerUpload()
+    {
+        return $this->belongsTo(Upload::class, 'answer_upload_id');
     }
 
     public function user()
@@ -32,8 +56,8 @@ class Question extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function answerUpload()
+    public function assessments()
     {
-        return $this->belongsTo(Upload::class, 'answer_upload_id');
+        return $this->hasMany(Assessment::class);
     }
 }

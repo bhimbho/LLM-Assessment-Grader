@@ -78,53 +78,57 @@
             <!-- /.navbar-right -->
             <!-- User Image with Dropdown -->
             <ul class="nav navbar-nav">
-                <li class="dropdown"><a href="javascript:void(0);" class="dropdown-toggle dropdown-toggle-user ripple" data-toggle="dropdown"><span class="avatar thumb-xs2"><img src="{{ asset('demo/users/use.jpg') }}" class="rounded-circle" alt=""> <i class="feather feather-chevron-down list-icon"></i></span></a>
-                    <div
-                    class="dropdown-menu dropdown-left dropdown-card dropdown-card-dark dropdown-card-profile animated flipInY">
+                <li class="dropdown"><a href="javascript:void(0);" class="dropdown-toggle dropdown-toggle-user ripple" data-toggle="dropdown"><span class="avatar thumb-xs2"><img src="{{ auth()->user()->profile_image_url }}" class="rounded-circle" alt=""> <i class="feather feather-chevron-down list-icon"></i></span></a>
+                    <div class="dropdown-menu dropdown-left dropdown-card dropdown-card-dark dropdown-card-profile animated flipInY">
                         <div class="card">
                             <ul class="list-unstyled card-body">
-                                <li><a href="#"><span><span class="align-middle">Manage Accounts</span></span></a>
+                                <li><a href="{{ route('account.profile') }}"><span><span class="align-middle">Manage Account</span></span></a>
                                 </li>
-                                <li><a href="#"><span><span class="align-middle">Change Password</span></span></a>
+                                <li><a href="{{ route('account.change-password') }}"><span><span class="align-middle">Change Password</span></span></a>
                                 </li>
+                                @if(auth()->user()->role === 'admin')
+                                <li><a href="{{ route('user-management.index') }}"><span><span class="align-middle">Manage Users</span></span></a>
+                                </li>
+                                @endif
                                 <li><a href="{{ route('logout') }}"><span><span class="align-middle">Sign Out</span></span></a>
                                 </li>
                             </ul>
                             <!-- /.card-body -->
                         </div>
                         <!-- /.card -->
-    </div>
-    <!-- /.dropdown-card-profile -->
-    </li>
-    <!-- /.dropdown -->
-    </ul>
-    <!-- /.navbar-nav -->
-    </nav>
-    <!-- /.navbar -->
-    <div class="content-wrapper">
-        <!-- SIDEBAR -->
-        <aside class="site-sidebar scrollbar-enabled" data-suppress-scroll-x="true">
-            <!-- User Details -->
-            <div class="side-user d-none">
-                <div class="col-sm-12 text-center p-0 clearfix">
-                    <div class="d-inline-block pos-relative mr-b-10">
-                        <figure class="thumb-sm mr-b-0 user--online">
-                            <img src="{{ asset('demo/users/use.jpg') }}" class="rounded-circle" alt="">
-                        </figure><a href="page-profile.html" class="text-muted side-user-link"><i class="feather feather-settings list-icon"></i></a>
                     </div>
-                    <!-- /.d-inline-block -->
-                    <div class="lh-14 mr-t-5"><a href="page-profile.html" class="hide-menu mt-3 mb-0 side-user-heading fw-500">Scott Adams</a>
-                        <br><small class="hide-menu">Developer</small>
+                    <!-- /.dropdown-card-profile -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+            <!-- /.navbar-nav -->
+        </nav>
+        <!-- /.navbar -->
+        <div class="content-wrapper">
+            <!-- SIDEBAR -->
+            <aside class="site-sidebar scrollbar-enabled" data-suppress-scroll-x="true">
+                <!-- User Details -->
+                <div class="side-user d-none">
+                    <div class="col-sm-12 text-center p-0 clearfix">
+                        <div class="d-inline-block pos-relative mr-b-10">
+                            <figure class="thumb-sm mr-b-0 user--online">
+                                <img src="{{ auth()->user()->profile_image_url }}" class="rounded-circle" alt="">
+                            </figure><a href="page-profile.html" class="text-muted side-user-link"><i class="feather feather-settings list-icon"></i></a>
+                        </div>
+                        <!-- /.d-inline-block -->
+                        <div class="lh-14 mr-t-5"><a href="page-profile.html" class="hide-menu mt-3 mb-0 side-user-heading fw-500">{{ auth()->user()->full_name }}</a>
+                            <br><small class="hide-menu">{{ ucfirst(auth()->user()->role) }}</small>
+                        </div>
                     </div>
+                    <!-- /.col-sm-12 -->
                 </div>
-                <!-- /.col-sm-12 -->
-            </div>
-            <!-- /.side-user -->
-            <!-- Call to Action -->
-            <div class="side-content mr-t-30 mr-lr-15"><a class="btn btn-block btn-success ripple fw-600" href="{{ route('question-bank.create') }}"><i class="fa fa-plus-square-o mr-1 mr-0-rtl ml-1-rtl"></i> New Assessment</a>
-            </div>
-            <!-- Sidebar Menu -->
-            @include('layouts.sidebar')
-            <!-- /.sidebar-nav -->
-        </aside>
-        <!-- /.site-sidebar -->
+                <!-- /.side-user -->
+                <!-- Call to Action -->
+                <div class="side-content mr-t-30 mr-lr-15"><a class="btn btn-block btn-success ripple fw-600" href="{{ route('question-bank.create') }}"><i class="fa fa-plus-square-o mr-1 mr-0-rtl ml-1-rtl"></i> New Question</a>
+                </div>
+                <!-- Sidebar Menu -->
+                @include('layouts.sidebar')
+                <!-- /.sidebar-nav -->
+            </aside>
+            <!-- /.site-sidebar -->
+        </div>

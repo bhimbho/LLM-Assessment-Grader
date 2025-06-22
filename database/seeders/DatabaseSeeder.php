@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Assessment;
 use App\Models\Question;
 use App\Models\User;
+use App\Models\Student;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -16,6 +17,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory(5)->create();
+        Student::factory(50)->create();
+        
         // Question::factory(5)->create()->each(function ($question) {
         //     Assessment::factory(5)->create([
         //         'question_id' => $question->id,

@@ -27,6 +27,8 @@ class User extends Authenticatable
         'email',
         'role',
         'password',
+        'is_banned',
+        'upload_id',
     ];
 
     /**
@@ -49,6 +51,44 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_banned' => 'boolean',
         ];
+    }
+
+    public function getFullNameAttribute()
+    {
+        $name = $this->firstname . ' ' . $this->lastname;
+        if ($this->othername) {
+            $name .= ' ' . $this->othername;
+        }
+        return $name;
+    }
+
+    public function isBanned()
+    {
+        return $this->is_banned;
+    }
+
+    public function ban()
+    {
+        $this->update(['is_banned' => true]);
+    }
+
+    public function unban()
+    {
+        $this->update(['is_banned' => false]);
+    }
+
+    public function upload()
+    {
+        return $this->belongsTo(Upload::class);
+    }
+
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->upload_id && $this->upload) {
+            return asset('storage/' . $this->upload->url);
+        }
+        return asset('demo/users/use.jpg'); // Default profile image
     }
 }

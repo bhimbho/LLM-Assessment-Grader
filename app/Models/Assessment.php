@@ -17,6 +17,15 @@ class Assessment extends Model
         'status',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($assessment) {
+            $assessment->uploads()->delete();
+        });
+    }
+
     public function question()
     {
         return $this->belongsTo(Question::class);

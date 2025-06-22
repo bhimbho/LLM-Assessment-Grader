@@ -9,4 +9,21 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     use HasFactory, HasUuids;
+    
+    protected $fillable = [
+        'firstname',
+        'lastname',
+        'othername',
+        'student_id',
+        'email',
+    ];
+
+    public function getFullNameAttribute()
+    {
+        $name = $this->firstname . ' ' . $this->lastname;
+        if ($this->othername) {
+            $name .= ' ' . $this->othername;
+        }
+        return $name;
+    }
 }

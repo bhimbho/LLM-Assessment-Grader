@@ -11,6 +11,7 @@ use App\Models\Question;
 use Illuminate\Queue\Jobs\Job;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Response;
 
 class AssessmentController extends Controller
 {
@@ -67,6 +68,79 @@ class AssessmentController extends Controller
             Log::error($e);
             return redirect()->route('assessment.show', $question->id)->with('error', 'Assessment upload failed');
         }
+    }
+
+    public function export(Question $question)
+    {
+        $assessments = Assessment::with(['question', 'uploads'])
+            ->where('question_id', $question->id)
+            ->get();
+
+        $filename = "assessments_{$question->course_code}_{$question->session}_level_{$question->level}_" . date('Y-m-d_H-i-s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($assessments) {
+            $file = fopen('php://output', 'w');
+            
+            fputcsv($file, [
+                'S/N',
+                'Course Code',
+                'Session',
+                'Level',
+                'Student ID',
+                'Student Name',
+                'Score',
+                'Max Score',
+                'Percentage',
+                'Strictness Level',
+                'Status',
+                'AI Analysis',
+                'Areas to Improve',
+                'Uploaded Files',
+                'Created Date'
+            ]);
+
+            foreach ($assessments as $index => $assessment) {
+                $response = json_decode($assessment->response, true);
+                $studentId = $response['student_id'] ?? 'AI Could not Determine Student ID';
+                $analysis = $response['your analysis of the student\'s answer'] ?? '';
+                $improvements = $response['area to improve on'] ?? '';
+                
+                $student = null;
+                if ($studentId && $studentId !== 'AI Could not Determine Student ID') {
+                    $student = \App\Models\Student::where('student_id', $studentId)->first();
+                }
+                
+                $studentName = $student ? $student->full_name : 'Not Found';
+                $uploadedFiles = $assessment->uploads->pluck('url')->implode(', ');
+                
+                fputcsv($file, [
+                    $index + 1,
+                    $assessment->question->course_code,
+                    $assessment->question->session,
+                    $assessment->question->level,
+                    $studentId,
+                    $studentName,
+                    $assessment->score ?? 0,
+                    $assessment->question->max_total,
+                    $assessment->percentage ?? 0,
+                    $assessment->question->difficulty,
+                    $assessment->status,
+                    $analysis,
+                    $improvements,
+                    $uploadedFiles,
+                    $assessment->created_at->format('Y-m-d H:i:s')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function destroy(Assessment $assessment)

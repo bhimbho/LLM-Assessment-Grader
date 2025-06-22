@@ -27,6 +27,9 @@
             <div class="widget-heading">
                 <h5 class="widget-title"><i class="material-icons mr-2">error_outline</i> All Assessments for {{ $question->course_code }} - {{ $question->session }} - Level {{ $question->level }}</h5>
                 <div class="widget-actions">
+                    <a href="{{ route('assessment.export', $question->id) }}" class="btn btn-success mr-2">
+                        <i class="feather feather-download"></i> Export CSV
+                    </a>
                     <a href="{{ route('assessment.create', $question->id) }}" class="btn btn-primary">Add Assessment</a>
                 </div>
                 <!-- /.widget-actions -->

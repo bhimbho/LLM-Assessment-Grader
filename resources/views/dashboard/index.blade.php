@@ -93,8 +93,7 @@
                         <div class="widget-body">
                             <div class="counter-w-info media">
                                 <div class="media-body">
-                                    <p class="text-muted mr-b-5">Total Students</p><span class="counter-title color-pink"><span class="counter">8470</span> </span>
-                                    <!-- /.counter-title -->
+                                    <p class="text-muted mr-b-5">Total Students</p><span class="counter-title color-pink"><span class="counter">{{ $studentCount }}</span> </span>
                                     <div style="margin-top: 15px"><span data-toggle="sparklines" data-height="15" data-bar-width="3" data-type="bar" data-chart-range-min="0" data-bar-spacing="3" data-bar-color="#ff6b88"><!-- 2,4,5,3,2,3,5,3,2,3,5,4,2 --></span>
                                     </div>
                                 </div>
@@ -138,91 +137,40 @@
                             <table class="widget-invoice-table table mb-0 headings-font-family fs-13" valign="center">
                                 <thead class="lh-43 fs-12">
                                     <tr>
-                                        <th># Invoice</th>
-                                        <th class="w-30">Client</th>
+                                        <th>Assessment ID</th>
+                                        <th class="w-30">Course</th>
+                                        <th>Student ID</th>
                                         <th>Date</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><span class="headings-color"># 250,875</span>
-                                        </td>
-                                        <td class="w-25"><span class="headings-color fw-bold">Gene Newman</span>
-                                        </td>
-                                        <td><span class="text-muted">15/04/2018</span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex"><a href="#" class="btn btn-xs px-3 mr-3 fw-900 fs-9 text-uppercase btn-outline-success flex-1 justify-content-center">Paid</a>  <a href="#" class="btn btn-xs px-0 content-color flex-2"><i class="fa fa-chevron-right"></i></a>
-                                            </div>
-                                            <!-- /.d-flex -->
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="headings-color"># 875,250</span>
-                                        </td>
-                                        <td class="w-25"><span class="headings-color fw-bold">Billy Black</span>
-                                        </td>
-                                        <td><span class="text-muted">14/04/2018</span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex"><a href="#" class="btn btn-xs px-3 mr-3 fw-900 fs-9 text-uppercase btn-outline-success flex-1 justify-content-center">Paid</a>  <a href="#" class="btn btn-xs px-0 content-color flex-2"><i class="fa fa-chevron-right"></i></a>
-                                            </div>
-                                            <!-- /.d-flex -->
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="headings-color"># 520,758</span>
-                                        </td>
-                                        <td class="w-25"><span class="headings-color fw-bold">Herbert Diaz</span>
-                                        </td>
-                                        <td><span class="text-muted">13/04/2018</span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex"><a href="#" class="btn btn-xs px-3 mr-3 fw-900 fs-9 text-uppercase btn-outline-danger justify-content-center flex-1">Overdue</a>  <a href="#" class="btn btn-xs px-0 content-color flex-2"><i class="fa fa-chevron-right"></i></a>
-                                            </div>
-                                            <!-- /.d-flex -->
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="headings-color"># 758,520</span>
-                                        </td>
-                                        <td class="w-25"><span class="headings-color fw-bold">Sylvia Harvey</span>
-                                        </td>
-                                        <td><span class="text-muted">12/04/2018</span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex"><a href="#" class="btn btn-xs px-3 mr-3 fw-900 fs-9 text-uppercase btn-outline-success justify-content-center flex-1">Paid</a>  <a href="#" class="btn btn-xs px-0 content-color flex-2"><i class="fa fa-chevron-right"></i></a>
-                                            </div>
-                                            <!-- /.d-flex -->
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="headings-color"># 250,875</span>
-                                        </td>
-                                        <td class="w-25"><span class="headings-color fw-bold">Marsha Hoffman</span>
-                                        </td>
-                                        <td><span class="text-muted">11/04/2018</span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex"><a href="#" class="btn btn-xs px-3 mr-3 fw-900 fs-9 text-uppercase btn-outline-info justify-content-center flex-1">On Hold</a>  <a href="#" class="btn btn-xs px-0 content-color flex-2"><i class="fa fa-chevron-right"></i></a>
-                                            </div>
-                                            <!-- /.d-flex -->
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="headings-color"># 875,250</span>
-                                        </td>
-                                        <td class="w-25"><span class="headings-color fw-bold">Mason Grant</span>
-                                        </td>
-                                        <td><span class="text-muted">10/04/2018</span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex"><a href="#" class="btn btn-xs px-3 mr-3 fw-900 fs-9 text-uppercase btn-outline-info justify-content-center flex-1">On Hold</a>  <a href="#" class="btn btn-xs px-0 content-color flex-2"><i class="fa fa-chevron-right"></i></a>
-                                            </div>
-                                            <!-- /.d-flex -->
-                                        </td>
-                                    </tr>
+                                    @forelse ($lastAssessments as $assessment)
+                                        @php
+                                            $response = json_decode($assessment->response, true);
+                                            $studentId = $response['student_id'] ?? 'Unknown';
+                                        @endphp
+                                        <tr>
+                                            <td><span class="headings-color"># {{ substr($assessment->id, 0, 8) }}</span></td>
+                                            <td class="w-25"><span class="headings-color fw-bold">{{ $assessment->question->course_code }}</span></td>
+                                            <td><span class="text-muted">{{ $studentId }}</span></td>
+                                            <td><span class="text-muted">{{ $assessment->created_at->format('d/m/Y') }}</span></td>
+                                            <td>
+                                                <div class="d-flex">
+                                                    @if($assessment->status === 'completed')
+                                                        <a href="#" class="btn btn-xs px-3 mr-3 fw-900 fs-9 text-uppercase btn-outline-success flex-1 justify-content-center">Completed</a>
+                                                    @else
+                                                        <a href="#" class="btn btn-xs px-3 mr-3 fw-900 fs-9 text-uppercase btn-outline-warning flex-1 justify-content-center">Pending</a>
+                                                    @endif
+                                                    <a href="{{ route('assessment.show', $assessment->question->id) }}" class="btn btn-xs px-0 content-color flex-2"><i class="fa fa-chevron-right"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center">No assessments found</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -236,6 +184,4 @@
             <hr>
         </main>
         <!-- /.main-wrappper -->
-    </div>
-    <!-- /.content-wrapper -->
     @include('layouts.footer')
