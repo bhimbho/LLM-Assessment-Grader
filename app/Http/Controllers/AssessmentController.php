@@ -34,19 +34,34 @@ class AssessmentController extends Controller
         $validated = $request->validated();
         try {
             DB::beginTransaction();
-            $assessment = Assessment::create([
-                'question_id' => $question->id,
-                'status' => 'pending',
-            ]);
             
-            foreach ($validated['assessment_files'] as $file) {
-                $upload = $this->uploadService->execute($file, 'assessments/');
-                $assessment->uploads()->attach($upload->id);
+            $createdAssessments = [];
+            
+            foreach ($validated['students'] as $studentIndex => $studentData) {
+                $assessment = Assessment::create([
+                    'question_id' => $question->id,
+                    'status' => 'pending',
+                ]);
+                
+                foreach ($studentData['assessment_files'] as $file) {
+                    $upload = $this->uploadService->execute($file, 'assessments/');
+                    $assessment->uploads()->attach($upload->id);
+                }
+                
+                $assessment = $assessment->load('uploads', 'question', 'question.answerUpload');
+                $createdAssessments[] = $assessment;
+                
+                AssessmentJob::dispatch($assessment, $validated['llm_model']);
             }
-            $assessment = $assessment->load('uploads', 'question', 'question.answerUpload');
-            AssessmentJob::dispatch($assessment, $validated['llm_model']);
+            
             DB::commit();
-            return redirect()->route('assessment.show', $question->id)->with('success', 'Assessment uploaded successfully');
+            
+            $studentCount = count($createdAssessments);
+            $message = $studentCount === 1 
+                ? 'Assessment uploaded successfully' 
+                : "{$studentCount} student assessments uploaded successfully";
+                
+            return redirect()->route('assessment.show', $question->id)->with('success', $message);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e);

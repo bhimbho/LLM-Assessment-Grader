@@ -22,9 +22,27 @@ class AssessmentStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'assessment_files' => 'required|array',
-            'assessment_files.*' => 'file|mimetypes:image/*,application/pdf',
+            'students' => 'required|array|min:1',
+            'students.*.assessment_files' => 'required|array|min:1',
+            'students.*.assessment_files.*' => 'file|mimetypes:image/*,application/pdf',
             'llm_model' => 'required|string',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'students.required' => 'At least one student group must be added.',
+            'students.min' => 'At least one student group must be added.',
+            'students.*.assessment_files.required' => 'Assessment files are required for each student group.',
+            'students.*.assessment_files.min' => 'At least one assessment file is required for each student group.',
+            'students.*.assessment_files.*.file' => 'Each file must be a valid file.',
+            'students.*.assessment_files.*.mimetypes' => 'Files must be images or PDFs.',
         ];
     }
 }

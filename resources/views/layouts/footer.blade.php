@@ -1,5 +1,5 @@
 <!-- FOOTER -->
-<footer class="footer"><span class="heading-font-family">Copyright @ 2017. All rights reserved WiseOwl Admin by Unifato</span>
+<footer class="footer"><span class="heading-font-family">Copyright @ {{ date('Y') }}. All rights reserved WiseOwl Admin by Unifato</span>
 </footer>
 </div>
 <!--/ #wrapper -->
