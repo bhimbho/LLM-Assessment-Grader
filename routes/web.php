@@ -16,5 +16,12 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-    Route::get('/question-bank', [QuestionBankController::class, 'index'])->name('question-bank.index');
+    Route::resource('/question-bank', QuestionBankController::class);
+    Route::get('/question-bank/upload/{question}', [QuestionBankController::class, 'upload'])->name('question-bank.upload');
+    Route::get('/assessment/upload/{question}', [AssessmentController::class, 'upload'])->name('assessment.upload');
+    Route::get('/assessment/{question}', [AssessmentController::class, 'show'])->name('assessment.show');
+    Route::get('/assessment/{question}/create', [AssessmentController::class, 'create'])->name('assessment.create');
+    Route::delete('/assessment/{assessment}', [AssessmentController::class, 'destroy'])->name('assessment.destroy');
+    Route::post('/assessment/{question}', [AssessmentController::class, 'store'])->name('assessment.store');
+    // Route::resource('/assessment', AssessmentController::class);
 });

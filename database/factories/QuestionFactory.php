@@ -21,6 +21,10 @@ class QuestionFactory extends Factory
             'question_text' => fake()->sentence(),
             // 'question_upload_id' => fake()->uuid(),
             'max_total' => fake()->numberBetween(1, 10),
+            'course_code' => fake()->word(),
+            'session' => fake()->year() - 1 . '/' . fake()->year(),
+            'semester' => fake()->numberBetween(1, 3),
+            'level' => fake()->numberBetween(1, 4),
             'user_id' => User::first()->id,
         ];
     }

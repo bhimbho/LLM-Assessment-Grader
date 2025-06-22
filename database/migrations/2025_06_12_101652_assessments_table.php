@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('assessments', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('question_id')->constrained()->onDelete('cascade');
-            $table->foreignUuid('answer_upload_id')->constrained('uploads', 'id');
             $table->integer('score')->nullable();
-            $table->string('difficulty')->nullable();
             $table->integer('percentage')->nullable();
+            $table->jsonb('response')->nullable();
             $table->enum('status', ['pending', 'completed'])->default('pending');
             $table->timestamps();
         });

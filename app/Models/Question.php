@@ -13,7 +13,13 @@ class Question extends Model
         'user_id',
         'question_text',
         'question_upload_id',
+        'answer_upload_id',
         'max_total',
+        'difficulty',
+        'course_code',
+        'session',
+        'semester',
+        'level',
     ];
 
     public function uploads()
@@ -24,5 +30,10 @@ class Question extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function answerUpload()
+    {
+        return $this->belongsTo(Upload::class, 'answer_upload_id');
     }
 }

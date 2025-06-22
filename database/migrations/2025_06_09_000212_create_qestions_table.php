@@ -13,9 +13,15 @@ return new class extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained();
+            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->longText('question_text')->nullable();
-            $table->foreignUuid('question_upload_id')->nullable()->constrained('uploads', 'id');
+            $table->foreignUuid('question_upload_id')->nullable()->constrained('uploads', 'id')->onDelete('cascade');
+            $table->foreignUuid('answer_upload_id')->nullable()->constrained('uploads', 'id')->onDelete('cascade');
+            $table->string('course_code');
+            $table->string('session');
+            $table->string('semester');
+            $table->string('level');
+            $table->string('difficulty');
             $table->integer('max_total');
             $table->timestamps();
         });

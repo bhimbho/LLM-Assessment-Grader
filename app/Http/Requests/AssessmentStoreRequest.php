@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AssignmentStoreRequest extends FormRequest
+class AssessmentStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,9 @@ class AssignmentStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'question_text'   => ['required_without:questions', 'string'],
-            
-            'questions'       => ['required_without:question_text', 'array'],
-            'questions.*'     => ['file', 'mimes:jpeg,png,jpg,pdf'],
-            'max_total'       => ['required', 'integer'],
+            'assessment_files' => 'required|array',
+            'assessment_files.*' => 'file|mimetypes:image/*,application/pdf',
+            'llm_model' => 'required|string',
         ];
     }
 }

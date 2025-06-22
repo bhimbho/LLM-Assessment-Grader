@@ -2,20 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AssignmentStoreRequest;
-use App\Models\Assignment;
+use App\Http\Requests\QuestionStoreRequest;
 use App\Models\Question;
 use Illuminate\Http\Request;
-use PhpParser\Node\Expr\Assign;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Action\UploadService;
 class QuestionBankController extends Controller
 {
+    public function __construct(
+        private UploadService $uploadService
+    ) {}
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $questions = Question::with('uploads')->paginate(15);
+        $questions = Question::with('uploads');
+        if(auth()->user()->role != 'admin') {
+            $questions = $questions->where('user_id', auth()->user()->id);
+        }
+        $questions = $questions->orderBy('created_at', 'desc')->get();
+        // dd(Question::count());
         return view('dashboard.question-manager', compact('questions'));
     }
 
@@ -24,17 +32,33 @@ class QuestionBankController extends Controller
      */
     public function create()
     {
-        //
+        return view('dashboard.create-question');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AssignmentStoreRequest $request)
+    public function store(QuestionStoreRequest $request)
     {
-        $request = $request->validated();
-        $request['user_id'] = auth()->user()->id;
-        $question = Question::create($request->validated());
+        $validated = $request->validated();
+        $validated['user_id'] = auth()->user()->id;
+        try {
+            DB::beginTransaction();
+            if ($request->hasFile('question_file')) {
+                $upload = $this->uploadService->execute($validated['question_file'], 'questions/');
+                $validated['question_upload_id'] = $upload->id;
+            }
+            if ($request->hasFile('answer_file')) {
+                $upload = $this->uploadService->execute($validated['answer_file'], 'answers/');
+                $validated['answer_upload_id'] = $upload->id;
+            }
+            Question::create($validated);
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error($th);
+            return redirect()->route('question-bank.index')->with('error', 'Question creation failed');
+        }
         return redirect()->route('question-bank.index')->with('success', 'Question created successfully');
     }
 

@@ -78,7 +78,7 @@
             <!-- /.navbar-right -->
             <!-- User Image with Dropdown -->
             <ul class="nav navbar-nav">
-                <li class="dropdown"><a href="javascript:void(0);" class="dropdown-toggle dropdown-toggle-user ripple" data-toggle="dropdown"><span class="avatar thumb-xs2"><img src="{{ asset('demo/users/user1.jpg') }}" class="rounded-circle" alt=""> <i class="feather feather-chevron-down list-icon"></i></span></a>
+                <li class="dropdown"><a href="javascript:void(0);" class="dropdown-toggle dropdown-toggle-user ripple" data-toggle="dropdown"><span class="avatar thumb-xs2"><img src="{{ asset('demo/users/use.jpg') }}" class="rounded-circle" alt=""> <i class="feather feather-chevron-down list-icon"></i></span></a>
                     <div
                     class="dropdown-menu dropdown-left dropdown-card dropdown-card-dark dropdown-card-profile animated flipInY">
                         <div class="card">
@@ -109,7 +109,7 @@
                 <div class="col-sm-12 text-center p-0 clearfix">
                     <div class="d-inline-block pos-relative mr-b-10">
                         <figure class="thumb-sm mr-b-0 user--online">
-                            <img src="{{ asset('demo/users/user1.jpg') }}" class="rounded-circle" alt="">
+                            <img src="{{ asset('demo/users/use.jpg') }}" class="rounded-circle" alt="">
                         </figure><a href="page-profile.html" class="text-muted side-user-link"><i class="feather feather-settings list-icon"></i></a>
                     </div>
                     <!-- /.d-inline-block -->
@@ -121,7 +121,7 @@
             </div>
             <!-- /.side-user -->
             <!-- Call to Action -->
-            <div class="side-content mr-t-30 mr-lr-15"><a class="btn btn-block btn-success ripple fw-600" href="#"><i class="fa fa-plus-square-o mr-1 mr-0-rtl ml-1-rtl"></i> New Assessment</a>
+            <div class="side-content mr-t-30 mr-lr-15"><a class="btn btn-block btn-success ripple fw-600" href="{{ route('question-bank.create') }}"><i class="fa fa-plus-square-o mr-1 mr-0-rtl ml-1-rtl"></i> New Assessment</a>
             </div>
             <!-- Sidebar Menu -->
             @include('layouts.sidebar')
