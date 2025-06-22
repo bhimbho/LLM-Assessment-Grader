@@ -89,7 +89,6 @@
     <!-- /.widget-list -->
     <hr>
 </main>
-<!-- /.main-wrappper -->
-</div>
+
 <!-- /.content-wrapper -->
 @include('layouts.footer')
