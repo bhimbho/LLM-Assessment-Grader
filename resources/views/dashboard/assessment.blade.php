@@ -49,6 +49,7 @@
                                 <th>Score</th>
                                 <th>Percentage</th>
                                 <th>Status</th>
+                                <th>Other Data</th>
                                 <th>Uploaded Files</th>
                                 <th>Actions</th>
                             </tr>
@@ -85,6 +86,19 @@
                                         </span>
                                     </td>
                                     <td>
+                                        @if($assessment->response)
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-info" 
+                                                    data-toggle="modal" 
+                                                    data-target="#responseModal{{ $assessment->id }}"
+                                                    title="View Response Data">
+                                                <i class="feather feather-eye"></i>
+                                            </button>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
                                         @if($assessment->uploads->count() > 0)
                                             @foreach($assessment->uploads as $upload)
                                                 <a href="{{ Storage::url($upload->url) }}" target="_blank" class="btn btn-sm btn-outline-primary mb-1">
@@ -112,7 +126,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center">No assessments found</td>
+                                    <td colspan="9" class="text-center">No assessments found</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -131,6 +145,100 @@
     <!-- /.widget-list -->
     <hr>
 </main>
+
+<!-- Response Detail Modals -->
+@foreach($assessments as $assessment)
+    @if($assessment->response)
+        <div class="modal fade" id="responseModal{{ $assessment->id }}" tabindex="-1" role="dialog" aria-labelledby="responseModalLabel{{ $assessment->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="responseModalLabel{{ $assessment->id }}">
+                            Assessment Response Details - {{ $assessment->question->course_code }}
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Student ID:</strong> 
+                                @if($assessment->student_id)
+                                    <span class="badge badge-success">{{ $assessment->student_id }}</span>
+                                @else
+                                    @php
+                                        $response = json_decode($assessment->response, true);
+                                        $aiStudentId = $response['student_id'] ?? 'AI Could not Determine';
+                                    @endphp
+                                    <span class="badge badge-warning">{{ $aiStudentId }}</span>
+                                @endif
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Score:</strong> 
+                                <span class="badge badge-{{ $assessment->score >= 70 ? 'success' : ($assessment->score >= 50 ? 'warning' : 'danger') }}">
+                                    {{ $assessment->score ?? '0' }}/{{ $assessment->question->max_total }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        @php
+                            $responseData = json_decode($assessment->response, true);
+                            $explanation = $responseData['explanation'] ?? '';
+                            $analysis = $responseData['analysis of the student answer'] ?? '';
+                            $improvements = $responseData['area to improve on'] ?? '';
+                        @endphp
+                        
+                        <div class="response-data">
+                            <h6><i class="feather feather-database mr-2"></i>Complete AI Response Data:</h6>
+                            @if(is_array($responseData))
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm">
+                                        <tbody>
+                                            @if($explanation)
+                                                <tr class="table-info">
+                                                    <td><strong><i class="feather feather-info mr-1"></i>Explanation:</strong></td>
+                                                    <td>{{ $explanation }}</td>
+                                                </tr>
+                                            @endif
+                                            @if($analysis)
+                                                <tr class="table-warning">
+                                                    <td><strong><i class="feather feather-search mr-1"></i>Analysis of Student Answer:</strong></td>
+                                                    <td>{{ $analysis }}</td>
+                                                </tr>
+                                            @endif
+                                            @if($improvements)
+                                                <tr class="table-danger">
+                                                    <td><strong><i class="feather feather-alert-triangle mr-1"></i>Areas to Improve On:</strong></td>
+                                                    <td>{{ $improvements }}</td>
+                                                </tr>
+                                            @endif
+                                            @foreach($responseData as $key => $value)
+                                                @if(!in_array($key, ['explanation', 'analysis of the student answer', 'area to improve on']))
+                                                    <tr>
+                                                        <td><strong>{{ ucwords(str_replace('_', ' ', $key)) }}:</strong></td>
+                                                        <td>{{ is_string($value) ? $value : json_encode($value) }}</td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="alert alert-info">
+                                    <pre>{{ $assessment->response }}</pre>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+@endforeach
 
 <style>
 .btn-group-vertical .btn,
@@ -241,6 +349,24 @@
         width: 100%;
         line-height: 1;
     }
+}
+
+.response-data pre {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.explanation-text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.6;
+    font-size: 0.95rem;
 }
 </style>
 
