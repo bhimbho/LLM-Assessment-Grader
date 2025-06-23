@@ -1,5 +1,5 @@
 <!-- FOOTER -->
-<footer class="footer"><span class="heading-font-family">Copyright @ {{ date('Y') }}. All rights reserved WiseOwl Admin by Unifato</span>
+<footer class="footer"><span class="heading-font-family">Copyright @ {{ date('Y') }}. All rights reserved to U23DLCS30085 by Soneye</span>
 </footer>
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

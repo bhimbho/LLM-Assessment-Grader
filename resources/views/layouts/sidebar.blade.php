@@ -4,8 +4,10 @@
         </li>
         <li class="current-page"><a href="/question-bank"><i class="list-icon feather feather-file-text"></i> <span class="hide-menu">Question Bank</span></a>
         </li>
+        <li class="current-page"><a href="{{ route('student-management.index') }}"><i class="list-icon feather feather-users"></i> <span class="hide-menu">Students</span></a>
+        </li>
         @if(auth()->user()->role === 'admin')
-        <li class="current-page"><a href="{{ route('user-management.index') }}"><i class="list-icon feather feather-users"></i> <span class="hide-menu">Manage Users</span></a>
+        <li class="current-page"><a href="{{ route('user-management.index') }}"><i class="list-icon feather feather-user-check"></i> <span class="hide-menu">Manage Users</span></a>
         </li>
         @endif
         {{-- <li class="current-page menu-item-has-children"><a href="index.html"><i class="list-icon feather feather-command"></i> <span class="hide-menu">Dashboard</span></a>

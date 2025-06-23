@@ -5,6 +5,7 @@ use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\QuestionBankController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/{user}/unban', [UserManagementController::class, 'unban'])->name('unban');
     });
     
+    Route::prefix('student-management')->name('student-management.')->group(function () {
+        Route::get('/', [StudentController::class, 'index'])->name('index');
+        Route::get('/{student}', [StudentController::class, 'show'])->name('show');
+        Route::delete('/{student}', [StudentController::class, 'destroy'])->name('destroy');
+        Route::get('/export/csv', [StudentController::class, 'export'])->name('export');
+    });
+    
     Route::prefix('question-bank')->name('question-bank.')->group(function () {
         Route::get('/', [QuestionBankController::class, 'index'])->name('index');
         Route::get('/create', [QuestionBankController::class, 'create'])->name('create');
@@ -51,6 +59,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/assessment/{question}', [AssessmentController::class, 'show'])->name('assessment.show');
     Route::get('/assessment/{question}/create', [AssessmentController::class, 'create'])->name('assessment.create');
     Route::get('/assessment/{question}/export', [AssessmentController::class, 'export'])->name('assessment.export');
+    Route::get('/assessment/{assessment}/edit', [AssessmentController::class, 'edit'])->name('assessment.edit');
+    Route::put('/assessment/{assessment}', [AssessmentController::class, 'update'])->name('assessment.update');
     Route::delete('/assessment/{assessment}', [AssessmentController::class, 'destroy'])->name('assessment.destroy');
     Route::post('/assessment/{question}', [AssessmentController::class, 'store'])->name('assessment.store');
 });

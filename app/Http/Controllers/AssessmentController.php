@@ -8,10 +8,12 @@ use App\Jobs\AssessmentJob;
 use App\Models\Assessment;
 use App\Models\AssessmentUpload;
 use App\Models\Question;
+use App\Models\Student;
 use Illuminate\Queue\Jobs\Job;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Response;
+use Illuminate\Http\Request;
 
 class AssessmentController extends Controller
 {
@@ -28,6 +30,35 @@ class AssessmentController extends Controller
     public function create(Question $question)
     {
         return view('dashboard.create-assessment', compact('question'));
+    }
+
+    public function edit(Assessment $assessment)
+    {
+        $students = Student::orderBy('student_id')->get();
+        return view('dashboard.edit-assessment', compact('assessment', 'students'));
+    }
+
+    public function update(Request $request, Assessment $assessment)
+    {
+        $request->validate([
+            'score' => 'required|numeric|min:0|max:100',
+            'student_id' => 'nullable|string|exists:students,student_id'
+        ]);
+
+        try {
+            $assessment->update([
+                'score' => $request->score,
+                'student_id' => $request->student_id,
+                'percentage' => ($request->score / $assessment->question->max_total) * 100
+            ]);
+
+            return redirect()->route('assessment.show', $assessment->question->id)
+                ->with('success', 'Assessment updated successfully');
+        } catch (\Exception $e) {
+            Log::error($e);
+            return redirect()->route('assessment.show', $assessment->question->id)
+                ->with('error', 'Assessment update failed');
+        }
     }
 
     public function store(AssessmentStoreRequest $request, Question $question)

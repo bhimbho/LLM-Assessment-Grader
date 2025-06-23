@@ -72,10 +72,9 @@ class GeminiService implements LLMInterface
         - You will need to return a JSON with key 'score' (maximum score no more than {$data->question->max_total}),
         - You will grade the assessment based on strictness level supplied which can be 'strict', 'medium' or 'lenient', the strictness level is the strictness level of the question.
         - The strictness level is {$data->question->difficulty}.
-        - key 'explanation' explaining the grade,
-        - key 'student_id' extracted from the handwritten assessment,
+        - key 'student_id' extracted from the handwritten assessment, if not found return student_id as null,
         - key 'percentage' for your grading accuracy (max 100%),
-        and a nested object 'response' with keys 'student_id' and 'your analysis of the student's answer', and 'area to improve on'.
+        and a nested object 'response' with keys 'student_id' and 'analysis of the student answer', 'explanation' explaining the grade and 'area to improve on'.
         You must return a valid JSON with these keys.
         - The Files are in this order: " . implode(', ', $label);
 
@@ -107,6 +106,7 @@ class GeminiService implements LLMInterface
 
             $data->status = 'completed';
             $data->percentage = $parsedData['percentage'] ?? null;
+            $data->student_id = $parsedData['student_id'] ?? null;
             $data->score = $parsedData['score'] ?? null;
             $data->response = $parsedData['response'] ?? null;
 

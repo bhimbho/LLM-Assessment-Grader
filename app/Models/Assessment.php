@@ -11,6 +11,7 @@ class Assessment extends Model
     use HasFactory, HasUuids;
     protected $fillable = [
         'question_id',
+        'student_id',
         'score',
         'difficulty',
         'percentage',
@@ -29,6 +30,11 @@ class Assessment extends Model
     public function question()
     {
         return $this->belongsTo(Question::class);
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'student_id', 'student_id');
     }
 
     public function uploads()

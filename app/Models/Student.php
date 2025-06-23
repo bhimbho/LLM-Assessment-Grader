@@ -18,6 +18,11 @@ class Student extends Model
         'email',
     ];
 
+    public function assessments()
+    {
+        return $this->hasMany(Assessment::class, 'student_id', 'student_id');
+    }
+
     public function getFullNameAttribute()
     {
         $name = $this->firstname . ' ' . $this->lastname;

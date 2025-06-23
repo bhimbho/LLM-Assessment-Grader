@@ -107,6 +107,29 @@
                     </div>
                     <!-- /.widget-bg -->
                 </div>
+                <!-- /.widget-holder -->
+                @if(auth()->user()->role === 'admin')
+                <div class="widget-holder widget-sm col-md-3 widget-full-height">
+                    <div class="widget-bg">
+                        <div class="widget-body">
+                            <div class="counter-w-info media">
+                                <div class="media-body">
+                                    <p class="text-muted mr-b-5">Total Staff</p><span class="counter-title color-success"><span class="counter">{{ $users }}</span> </span>
+                                    <div style="margin-top: 15px"><span data-toggle="sparklines" data-height="15" data-bar-width="3" data-type="bar" data-chart-range-min="0" data-bar-spacing="3" data-bar-color="#28a745"><!-- 1,2,3,2,1,2,3,2,1,2,3,2,1 --></span>
+                                    </div>
+                                </div>
+                                <!-- /.media-body -->
+                                <div class="pull-right align-self-center"><i class="list-icon feather feather-user-check bg-success"></i>
+                                </div>
+                            </div>
+                            <!-- /.counter-w-info -->
+                        </div>
+                        <!-- /.widget-body -->
+                    </div>
+                    <!-- /.widget-bg -->
+                </div>
+                <!-- /.widget-holder -->
+                @endif
             </div>
             <!-- /.widget-list -->
             <hr>
