@@ -4,11 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\Assessment;
+use App\Exports\StudentsWithAssessmentsExport;
+use App\Exports\StudentsExport;
+use App\Traits\HasExport;
+use App\Helpers\ExportHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
 {
+    use HasExport;
     /**
      * Display a listing of the resource.
      */
@@ -68,7 +74,7 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        if (auth()->user()->role !== 'admin') {
+        if (Auth::check() && Auth::user()->role !== 'admin') {
             return redirect()->route('student-management.index')->with('error', 'You do not have permission to delete students.');
         }
 
@@ -87,73 +93,25 @@ class StudentController extends Controller
 
     public function export()
     {
-        $students = Student::with(['assessments' => function($query) {
-            $query->with(['question', 'uploads']);
-        }])->get();
+        $export = new StudentsWithAssessmentsExport();
+        $filename = ExportHelper::studentFilename('students_with_assessments');
+        
+        return $this->exportToExcel($export, $filename);
+    }
 
-        $filename = 'students_with_assessments_' . date('Y-m-d_H-i-s') . '.csv';
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
+    public function exportStudents()
+    {
+        $export = new StudentsExport();
+        $filename = ExportHelper::studentFilename('students');
+        
+        return $this->exportToExcel($export, $filename);
+    }
 
-        $callback = function() use ($students) {
-            $file = fopen('php://output', 'w');
-            
-            fputcsv($file, [
-                'Student ID',
-                'First Name',
-                'Last Name',
-                'Other Name',
-                'Email',
-                'Course Code',
-                'Session',
-                'Level',
-                'Semester',
-                'Score',
-                'Status',
-                'Assessment Date'
-            ]);
-
-            foreach ($students as $student) {
-                if ($student->assessments->count() > 0) {
-                    foreach ($student->assessments as $assessment) {
-                        fputcsv($file, [
-                            $student->student_id,
-                            $student->firstname,
-                            $student->lastname,
-                            $student->othername ?? '',
-                            $student->email,
-                            $assessment->question ? $assessment->question->course_code : '',
-                            $assessment->question ? $assessment->question->session : '',
-                            $assessment->question ? $assessment->question->level : '',
-                            $assessment->question ? $assessment->question->semester : '',
-                            $assessment->score,
-                            $assessment->status,
-                            $assessment->created_at->format('Y-m-d H:i:s')
-                        ]);
-                    }
-                } else {
-                    fputcsv($file, [
-                        $student->student_id,
-                        $student->firstname,
-                        $student->lastname,
-                        $student->othername ?? '',
-                        $student->email,
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        ''
-                    ]);
-                }
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+    public function exportToCsv()
+    {
+        $export = new StudentsWithAssessmentsExport();
+        $filename = ExportHelper::studentFilename('students_with_assessments');
+        
+        return $this->exportToCsv($export, $filename);
     }
 }

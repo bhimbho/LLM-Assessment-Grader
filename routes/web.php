@@ -43,6 +43,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/{student}', [StudentController::class, 'show'])->name('show');
         Route::delete('/{student}', [StudentController::class, 'destroy'])->name('destroy');
         Route::get('/export/csv', [StudentController::class, 'export'])->name('export');
+        Route::get('/export/excel', [StudentController::class, 'export'])->name('export.excel');
+        Route::get('/export/students', [StudentController::class, 'exportStudents'])->name('export.students');
+        Route::get('/export/assessments', [StudentController::class, 'exportToCsv'])->name('export.assessments');
     });
     
     Route::prefix('question-bank')->name('question-bank.')->group(function () {
@@ -59,6 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/assessment/{question}', [AssessmentController::class, 'show'])->name('assessment.show');
     Route::get('/assessment/{question}/create', [AssessmentController::class, 'create'])->name('assessment.create');
     Route::get('/assessment/{question}/export', [AssessmentController::class, 'export'])->name('assessment.export');
+    Route::get('/assessment/{question}/export/csv', [AssessmentController::class, 'exportToCsv'])->name('assessment.export.csv');
     Route::get('/assessment/{assessment}/edit', [AssessmentController::class, 'edit'])->name('assessment.edit');
     Route::put('/assessment/{assessment}', [AssessmentController::class, 'update'])->name('assessment.update');
     Route::delete('/assessment/{assessment}', [AssessmentController::class, 'destroy'])->name('assessment.destroy');
