@@ -51,7 +51,7 @@ class StudentsWithAssessmentsExport extends BaseExport
                     $assessment->question ? $assessment->question->session : '',
                     $assessment->question ? $assessment->question->level : '',
                     $assessment->question ? $assessment->question->semester : '',
-                    $assessment->score,
+                    $assessment->score . '/' . $assessment->question->max_total,
                     $assessment->status,
                     $assessment->created_at->format('Y-m-d H:i:s')
                 ];
@@ -122,7 +122,7 @@ class StudentsWithAssessmentsExport extends BaseExport
                 $assessment->question ? $assessment->question->session : '',
                 $assessment->question ? $assessment->question->level : '',
                 $assessment->question ? $assessment->question->semester : '',
-                $assessment->score,
+                $assessment->score . '/' . $assessment->question->max_total,
                 $assessment->status,
                 $assessment->created_at->format('Y-m-d H:i:s')
             ];

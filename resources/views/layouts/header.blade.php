@@ -49,7 +49,7 @@
             
             <div class="spacer"></div>
             <!-- Right Menu -->
-            <ul class="nav navbar-nav d-none d-lg-flex ml-2 ml-0-rtl">
+            {{-- <ul class="nav navbar-nav d-none d-lg-flex ml-2 ml-0-rtl">
                 <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="feather feather-bell list-icon"></i> <span class="button-pulse bg-danger"></span></a>
                     <div class="dropdown-menu dropdown-left dropdown-card dropdown-card-dark animated flipInY">
                         <div class="card">
@@ -72,9 +72,9 @@
                     <!-- /.dropdown-menu -->
                 </li>
                 <!-- /.dropdown -->
-                {{-- <li><a href="javascript:void(0);" class="right-sidebar-toggle"><i class="feather feather-settings list-icon"></i></a>
-                </li> --}}
-            </ul>
+                <li><a href="javascript:void(0);" class="right-sidebar-toggle"><i class="feather feather-settings list-icon"></i></a>
+                </li>
+            </ul> --}}
             <!-- /.navbar-right -->
             <!-- User Image with Dropdown -->
             <ul class="nav navbar-nav">

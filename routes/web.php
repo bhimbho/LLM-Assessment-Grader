@@ -10,7 +10,7 @@ use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('index');
+    return redirect()->route('login');
 });
 
 Route::get('/login', [AuthController::class, 'index'])->name('login');

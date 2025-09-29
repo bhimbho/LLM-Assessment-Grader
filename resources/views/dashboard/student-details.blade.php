@@ -75,7 +75,7 @@
                                     <th>S/N</th>
                                     <th>Course Code</th>
                                     <th>Score</th>
-                                    <th>Percentage</th>
+                                    <th>Max Score</th>
                                     <th>Status</th>
                                     <th>Assessment Date</th>
                                     <th>Files</th>
@@ -97,7 +97,7 @@
                                                 {{ $assessment->score }}
                                             </span>
                                         </td>
-                                        <td>{{ $assessment->percentage }}%</td>
+                                        <td>{{ $assessment->question->max_total }}</td>
                                         <td>
                                             <span class="badge badge-{{ $assessment->status === 'completed' ? 'success' : 'secondary' }}">
                                                 {{ ucfirst($assessment->status) }}

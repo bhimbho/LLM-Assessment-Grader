@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Assessment;
+use App\Service\ChatGptService;
 use App\Service\GeminiService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -26,6 +27,8 @@ class AssessmentJob implements ShouldQueue
     {
         $llmService = match ($this->llmModel) {
             'gemini-pro' => new GeminiService(),
+            'gpt-4o', 'openai', 'chatgpt' => new ChatGptService(),
+            default => new GeminiService(),
         };
         
         $llmService->generateResponse($this->assessment);

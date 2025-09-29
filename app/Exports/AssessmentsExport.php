@@ -15,7 +15,7 @@ class AssessmentsExport extends BaseExport
         'Session',
         'Level',
         'Semester',
-        'Score',
+        'Score/Max Score',
         'Status',
         'Created At',
         'Updated At'
@@ -45,7 +45,7 @@ class AssessmentsExport extends BaseExport
             $assessment->question ? $assessment->question->session : '',
             $assessment->question ? $assessment->question->level : '',
             $assessment->question ? $assessment->question->semester : '',
-            $assessment->score,
+            $assessment->score . '/' . $assessment->question->max_total,
             $assessment->status,
             $assessment->created_at->format('Y-m-d H:i:s'),
             $assessment->updated_at->format('Y-m-d H:i:s')
