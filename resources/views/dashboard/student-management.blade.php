@@ -18,6 +18,9 @@
             <div class="widget-heading">
                 <h5 class="widget-title"><i class="material-icons mr-2">school</i> All Students</h5>
                 <div class="widget-actions">
+                    <a href="{{ route('student-management.create') }}" class="btn btn-primary">
+                        <i class="feather feather-plus"></i> Add Student
+                    </a>
                     @if(auth()->user()->role === 'admin')
                         <a href="{{ route('student-management.export') }}" class="btn btn-success">
                             <i class="feather feather-download"></i> Export Students

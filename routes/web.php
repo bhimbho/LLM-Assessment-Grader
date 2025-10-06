@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
     
     Route::prefix('student-management')->name('student-management.')->group(function () {
         Route::get('/', [StudentController::class, 'index'])->name('index');
+        Route::get('/create', [StudentController::class, 'create'])->name('create');
+        Route::post('/', [StudentController::class, 'store'])->name('store');
         Route::get('/{student}', [StudentController::class, 'show'])->name('show');
         Route::delete('/{student}', [StudentController::class, 'destroy'])->name('destroy');
         Route::get('/export/csv', [StudentController::class, 'export'])->name('export');

@@ -8,9 +8,11 @@ use App\Exports\StudentsWithAssessmentsExport;
 use App\Exports\StudentsExport;
 use App\Traits\HasExport;
 use App\Helpers\ExportHelper;
+use App\Http\Requests\StudentStoreRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class StudentController extends Controller
 {
@@ -29,15 +31,30 @@ class StudentController extends Controller
      */
     public function create()
     {
-        //
+        return view('dashboard.create-student');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StudentStoreRequest $request)
     {
-        //
+        try {
+            DB::beginTransaction();
+            
+            $student = Student::create($request->validated());
+            
+            DB::commit();
+            
+            return redirect()->route('student-management.index')
+                ->with('success', 'Student added successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Student creation failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to add student. Please try again.');
+        }
     }
 
     /**
@@ -112,6 +129,6 @@ class StudentController extends Controller
         $export = new StudentsWithAssessmentsExport();
         $filename = ExportHelper::studentFilename('students_with_assessments');
         
-        return $this->exportToCsv($export, $filename);
+        return $this->getExportService()->exportToCsv($export, $filename);
     }
 }

@@ -88,7 +88,6 @@ class AssessmentController extends Controller
                 
                 $assessment = $assessment->load('uploads', 'question', 'question.answerUpload');
                 $createdAssessments[] = $assessment;
-                // dd($validated['llm_model']);
                 AssessmentJob::dispatch($assessment, $validated['llm_model']);
             }
             
