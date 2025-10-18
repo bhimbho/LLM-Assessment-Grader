@@ -26,9 +26,10 @@
             <div class="login-center">
                 <div class="navbar-header text-center mt-2 mb-4">
                     <a href="index.html">
-                        <img alt="" src="{{ asset('img/logo-light.png') }}">
+                        <img alt="" src="{{ asset('img/logo-dark.png') }}">
                     </a>
                 </div>
+                <h4 class="text-center">LLM Assessment Grading System</h4>
                 @include('components.alert')
                 <!-- /.navbar-header -->
                 <form action="{{ route('login.post') }}" method="post">
