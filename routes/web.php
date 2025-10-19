@@ -6,16 +6,32 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\QuestionBankController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentAuthController;
+use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 });
 
+// Staff/Admin Authentication
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Student Authentication
+Route::prefix('student')->name('student.')->group(function () {
+    Route::get('/login', [StudentAuthController::class, 'index'])->name('login');
+    Route::post('/login', [StudentAuthController::class, 'login'])->name('login.post');
+    Route::get('/logout', [StudentAuthController::class, 'logout'])->name('logout');
+    
+    Route::middleware('auth:student')->group(function () {
+        Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/assessments', [StudentDashboardController::class, 'assessments'])->name('assessments');
+        Route::get('/assessment/{assessment}', [StudentDashboardController::class, 'showAssessment'])->name('assessment.show');
+    });
+});
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     

@@ -27,7 +27,7 @@ class StudentStoreRequest extends FormRequest
             'lastname' => ['required', 'string', 'max:255'],
             'othername' => ['nullable', 'string', 'max:255'],
             'student_id' => ['required', 'string', 'max:255', 'unique:students,student_id'],
-            'email' => ['nullable', 'email', 'max:255', 'unique:students,email'],
+            'email' => ['required', 'email', 'max:255', 'unique:students,email'],
         ];
     }
 
@@ -55,6 +55,7 @@ class StudentStoreRequest extends FormRequest
             'student_id.max' => 'Student ID may not be greater than 255 characters.',
             'student_id.unique' => 'This Student ID already exists.',
             
+            'email.required' => 'Email is required.',
             'email.email' => 'Email must be a valid email address.',
             'email.max' => 'Email may not be greater than 255 characters.',
             'email.unique' => 'This email address is already registered.',

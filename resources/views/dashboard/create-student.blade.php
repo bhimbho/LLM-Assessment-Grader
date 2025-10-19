@@ -93,17 +93,24 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="email" class="form-label">Email Address</label>
+                                    <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
                                     <input type="email" 
                                            class="form-control @error('email') is-invalid @enderror" 
                                            id="email" 
                                            name="email" 
-                                           value="{{ old('email') }}">
+                                           value="{{ old('email') }}" 
+                                           required>
+                                    <small class="form-text text-muted">Login credentials will be sent to this email address.</small>
                                     @error('email')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="material-icons mr-2">info</i>
+                            <strong>Note:</strong> A default password will be automatically generated and sent to the student's email address. The student can use their Student ID and this password to log in to the student portal.
                         </div>
 
                         <div class="form-group mt-4">

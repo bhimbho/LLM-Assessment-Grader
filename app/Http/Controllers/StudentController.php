@@ -9,10 +9,13 @@ use App\Exports\StudentsExport;
 use App\Traits\HasExport;
 use App\Helpers\ExportHelper;
 use App\Http\Requests\StudentStoreRequest;
+use App\Notifications\StudentCredentialsNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
@@ -42,12 +45,32 @@ class StudentController extends Controller
         try {
             DB::beginTransaction();
             
-            $student = Student::create($request->validated());
+            // Generate a random password
+            $password = Str::random(8);
+            
+            // Create student with password
+            $studentData = $request->validated();
+            $studentData['password'] = Hash::make($password);
+            
+            $student = Student::create($studentData);
+            
+            // Send credentials email if email is provided
+            if ($student->email) {
+                $loginUrl = route('student.login');
+                $student->notify(new StudentCredentialsNotification($password, $loginUrl));
+            }
             
             DB::commit();
             
+            $message = 'Student added successfully';
+            if ($student->email) {
+                $message .= ' and credentials sent to their email';
+            } else {
+                $message .= '. Note: No email was provided, so credentials were not sent.';
+            }
+            
             return redirect()->route('student-management.index')
-                ->with('success', 'Student added successfully');
+                ->with('success', $message);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Student creation failed: ' . $e->getMessage());

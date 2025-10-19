@@ -106,7 +106,15 @@ class GeminiService implements LLMInterface
 
             $data->status = 'completed';
             $data->percentage = $parsedData['percentage'] ?? null;
-            $data->student_id = $parsedData['student_id'] ?? null;
+            
+            // Only set student_id if it's provided and the student exists
+            if (isset($parsedData['student_id']) && $parsedData['student_id']) {
+                $studentExists = \App\Models\Student::where('student_id', $parsedData['student_id'])->exists();
+                if ($studentExists) {
+                    $data->student_id = $parsedData['student_id'];
+                }
+            }
+            
             $data->score = $parsedData['score'] ?? null;
             $data->response = $parsedData['response'] ?? null;
 
