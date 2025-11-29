@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Models\Student;
 use App\Service\Interface\LLMInterface;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
@@ -79,23 +80,34 @@ class GeminiService implements LLMInterface
         - The Files are in this order: " . implode(', ', $label);
 
         try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json'
-            ])
-            ->post(env('GEMINI_API_URL').env('GEMINI_API_KEY'), [
-                'contents' => [
-                    'parts' => [
-                        [
-                            'text' => $prompt,
-                        ],
-                        ...$inlineData
+            $response = Http::timeout(120) 
+                ->withHeaders([
+                    'Content-Type' => 'application/json'
+                ])
+                ->post(env('GEMINI_API_URL').env('GEMINI_API_KEY'), [
+                    'contents' => [
+                        'parts' => [
+                            [
+                                'text' => $prompt,
+                            ],
+                            ...$inlineData
+                        ]
                     ]
-                ]
-            ]);
+                ]);
             Log::info($response->json());
 
             if ($response->failed()) {
+                Log::error('Gemini API Request Failed', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                    'assessment_id' => $data->id
+                ]);
                 $data->status = 'failed';
+                $data->response = json_encode([
+                    'error' => 'API request failed',
+                    'status' => $response->status(),
+                    'details' => $response->body()
+                ]);
                 $data->save();
                 return;
             }
@@ -109,7 +121,7 @@ class GeminiService implements LLMInterface
             
             // Only set student_id if it's provided and the student exists
             if (isset($parsedData['student_id']) && $parsedData['student_id']) {
-                $studentExists = \App\Models\Student::where('student_id', $parsedData['student_id'])->exists();
+                $studentExists = Student::where('student_id', $parsedData['student_id'])->exists();
                 if ($studentExists) {
                     $data->student_id = $parsedData['student_id'];
                 }
@@ -118,15 +130,51 @@ class GeminiService implements LLMInterface
             $data->score = $parsedData['score'] ?? null;
             $data->response = $parsedData['response'] ?? null;
 
-            $data->save();        
+            $data->save();
+            
+            // Send notification to student if assessment is completed and student is identified
+            if ($data->student_id && $data->student) {
+                try {
+                    $data->student->notify(new \App\Notifications\AssessmentCompletedNotification($data));
+                    Log::info('Assessment completion notification sent successfully', [
+                        'assessment_id' => $data->id,
+                        'student_id' => $data->student_id
+                    ]);
+                } catch (\Exception $notificationError) {
+                    // Log notification failure but don't fail the assessment
+                    Log::error('Failed to send assessment notification', [
+                        'assessment_id' => $data->id,
+                        'student_id' => $data->student_id,
+                        'error' => $notificationError->getMessage()
+                    ]);
+                }
+            }
         } catch (ConnectionException $e) {
-            Log::error('Gemini API Connection Error: ' . $e->getMessage());
+            Log::error('Gemini API Connection Error', [
+                'message' => $e->getMessage(),
+                'assessment_id' => $data->id,
+                'error_type' => 'timeout/connection'
+            ]);
             $data->status = 'failed';
+            $data->response = json_encode([
+                'error' => 'Connection timeout',
+                'message' => 'The AI grading service took too long to respond. Please try again.',
+                'technical_details' => $e->getMessage()
+            ]);
             $data->save();
             return;
         } catch (\Exception $e) {
-            Log::error('Gemini Service Error: ' . $e->getMessage());
+            Log::error('Gemini Service Error', [
+                'message' => $e->getMessage(),
+                'assessment_id' => $data->id,
+                'trace' => $e->getTraceAsString()
+            ]);
             $data->status = 'failed';
+            $data->response = json_encode([
+                'error' => 'Service error',
+                'message' => 'An unexpected error occurred during grading.',
+                'technical_details' => $e->getMessage()
+            ]);
             $data->save();
             return;
         }

@@ -77,6 +77,9 @@ class UserManagementController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+        // Store plain password before hashing for notification
+        $plainPassword = $request->password;
+
         $userData = [
             'staff_id' => $request->staff_id,
             'firstname' => $request->firstname,
@@ -84,7 +87,7 @@ class UserManagementController extends Controller
             'othername' => $request->othername,
             'email' => $request->email,
             'role' => $request->role,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($plainPassword),
         ];
 
         // Handle profile image upload
@@ -100,9 +103,32 @@ class UserManagementController extends Controller
             $userData['upload_id'] = $upload->id;
         }
 
-        User::create($userData);
+        $user = User::create($userData);
 
-        return redirect()->route('user-management.index')->with('success', 'User created successfully!');
+        // Send credentials email
+        $notificationSent = false;
+        if ($user->email) {
+            try {
+                $loginUrl = route('login');
+                $user->notify(new \App\Notifications\UserCredentialsNotification($plainPassword, $loginUrl));
+                $notificationSent = true;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to send user credentials notification', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
+        $message = 'User created successfully!';
+        if ($notificationSent) {
+            $message .= ' Credentials have been sent to their email.';
+        } elseif ($user->email) {
+            $message .= ' However, the email notification could not be sent. Please provide credentials manually.';
+        }
+
+        return redirect()->route('user-management.index')->with('success', $message);
     }
 
     public function edit(User $user)

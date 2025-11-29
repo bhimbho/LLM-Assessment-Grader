@@ -33,11 +33,9 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Question</th>
+                                            <th>Assessment ID</th>
                                             <th>Course Code</th>
-                                            <th>Difficulty</th>
                                             <th>Score</th>
-                                            <th>Percentage</th>
                                             <th>Status</th>
                                             <th>Date</th>
                                             <th>Action</th>
@@ -46,21 +44,15 @@
                                     <tbody>
                                         @foreach($assessments as $assessment)
                                             <tr>
-                                                <td>{{ Str::limit($assessment->question->question_text ?? 'N/A', 50) }}</td>
+                                                <td><span class="text-white"># {{ substr($assessment->id, 0, 8) }}</span></td>
                                                 <td>
                                                     <span class="badge badge-info">
                                                         {{ $assessment->question->course_code ?? 'N/A' }}
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <span class="badge badge-{{ $assessment->question->difficulty === 'hard' ? 'danger' : ($assessment->question->difficulty === 'medium' ? 'warning' : 'success') }}">
-                                                        {{ ucfirst($assessment->question->difficulty ?? 'N/A') }}
-                                                    </span>
-                                                </td>
-                                                <td>{{ $assessment->score ?? 'N/A' }}</td>
-                                                <td>
-                                                    <span class="badge badge-{{ $assessment->percentage >= 70 ? 'success' : ($assessment->percentage >= 50 ? 'warning' : 'danger') }}">
-                                                        {{ $assessment->percentage ?? 'N/A' }}%
+                                                    <span class="text-{{ $assessment->score >= ($assessment->question->max_total * 0.7) ? 'success' : ($assessment->score >= ($assessment->question->max_total * 0.5) ? 'warning' : 'danger') }}">
+                                                        <strong>{{ $assessment->score ?? 'N/A' }}</strong> / {{ $assessment->question->max_total ?? 'N/A' }}
                                                     </span>
                                                 </td>
                                                 <td>

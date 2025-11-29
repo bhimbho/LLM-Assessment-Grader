@@ -48,7 +48,13 @@
                                     <td>{{ $question->semester }}</td>
                                     <td>{{ $question->level }}</td>
                                     <td>{{ $question->difficulty }}</td>
-                                    <td>{{ substr($question->question_text, 0, 100) }}{{ strlen($question->question_text) > 100 ? '...' : '' }}</td>
+                                    <td>
+                                        @if (empty($question->question_text))
+                                            <i class="material-icons text-danger" title="No question provided" data-toggle="tooltip">close</i>
+                                        @else
+                                            {{ substr($question->question_text, 0, 100) }}{{ strlen($question->question_text) > 100 ? '...' : '' }}
+                                        @endif
+                                    </td>
                                     <td>
                                         @if ($question->questionUpload)
                                             <a href="{{ Storage::url($question->questionUpload->url) }}" target="_blank" class="btn btn-sm btn-outline-primary">

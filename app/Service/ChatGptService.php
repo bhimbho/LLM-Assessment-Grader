@@ -76,7 +76,8 @@ class ChatGptService implements LLMInterface
 		]);
 
 		try {
-			$response = Http::withToken(env('OPENAI_API_KEY'))
+			$response = Http::timeout(120) // Increase timeout to 120 seconds
+				->withToken(env('OPENAI_API_KEY'))
 				->withHeaders([
 					'Content-Type' => 'application/json',
 				])
@@ -159,16 +160,50 @@ class ChatGptService implements LLMInterface
 			$data->response = $parsedData['response'] ?? null;
 
 			$data->save();
+			
+			// Send notification to student if assessment is completed and student is identified
+			if ($data->student_id && $data->student) {
+				try {
+					$data->student->notify(new \App\Notifications\AssessmentCompletedNotification($data));
+					Log::info('Assessment completion notification sent successfully', [
+						'assessment_id' => $data->id,
+						'student_id' => $data->student_id
+					]);
+				} catch (\Exception $notificationError) {
+					// Log notification failure but don't fail the assessment
+					Log::error('Failed to send assessment notification', [
+						'assessment_id' => $data->id,
+						'student_id' => $data->student_id,
+						'error' => $notificationError->getMessage()
+					]);
+				}
+			}
 		} catch (ConnectionException $e) {
-			Log::error('OpenAI API Connection Error: ' . $e->getMessage());
+			Log::error('OpenAI API Connection Error', [
+				'message' => $e->getMessage(),
+				'assessment_id' => $data->id,
+				'error_type' => 'timeout/connection'
+			]);
 			$data->status = 'failed';
-			$data->response = json_encode(['error' => 'Connection error: ' . $e->getMessage()]);
+			$data->response = json_encode([
+				'error' => 'Connection timeout',
+				'message' => 'The AI grading service took too long to respond. Please try again.',
+				'technical_details' => $e->getMessage()
+			]);
 			$data->save();
 			return;
 		} catch (\Exception $e) {
-			Log::error('OpenAI Service Error: ' . $e->getMessage());
+			Log::error('OpenAI Service Error', [
+				'message' => $e->getMessage(),
+				'assessment_id' => $data->id,
+				'trace' => $e->getTraceAsString()
+			]);
 			$data->status = 'failed';
-			$data->response = json_encode(['error' => 'Service error: ' . $e->getMessage()]);
+			$data->response = json_encode([
+				'error' => 'Service error',
+				'message' => 'An unexpected error occurred during grading.',
+				'technical_details' => $e->getMessage()
+			]);
 			$data->save();
 			return;
 		}

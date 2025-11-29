@@ -16,17 +16,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(5)->create();
-        Student::factory(50)->create();
+        $this->call([
+            AdminStaffSeeder::class,
+            StudentSeeder::class,
+        ]);
+        
         
         // Question::factory(5)->create()->each(function ($question) {
         //     Assessment::factory(5)->create([
         //         'question_id' => $question->id,
         //     ]);
         // });
-
-//         1. is php loosely typed or strongly typed?
-// 2. what is the latest version of PHP
-// 3. phpstorm is a type of what?
     }
 }

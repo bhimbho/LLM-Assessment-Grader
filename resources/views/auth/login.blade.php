@@ -52,6 +52,9 @@
                         </div>
                         <!-- /.col-md-12 -->
                     </div>
+                    <div class="form-group text-center mt-3">
+                        <a href="{{ url('/') }}" class="text-muted"><i class="material-icons mr-1 fs-18" style="vertical-align: middle;">arrow_back</i> Back to Home</a>
+                    </div>
                     <!-- /.form-group -->
                 </form>
                 <!-- /.form-material -->
